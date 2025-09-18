@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Quicksand } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import { dark } from '@clerk/themes'
+import { dark } from "@clerk/themes";
+import Provider from "./provider";
 
 const quickSand = Quicksand({
   subsets: ["latin"],
@@ -33,7 +34,7 @@ export default function RootLayout({
           suppressHydrationWarning={true}
           className={`${quickSand.className}`}
         >
-          {children}
+          <Provider>{children}</Provider>
         </body>
       </html>
     </ClerkProvider>
