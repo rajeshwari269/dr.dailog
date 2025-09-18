@@ -51,8 +51,8 @@ const AddNewConsultation = () => {
     setLoading(true);
     try {
       const result = await axios.post("/api/session-chat", {
-        symptoms,
-        selectedDoctor,
+        symptoms: symptoms,
+        selectedDoctor: selectedDoctor,
       });
 
       if (result.data?.sessionId) {
