@@ -4,6 +4,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import Provider from "./provider";
+import { Toaster } from "sonner";
 
 const quickSand = Quicksand({
   subsets: ["latin"],
@@ -35,6 +36,22 @@ export default function RootLayout({
           className={`${quickSand.className}`}
         >
           <Provider>{children}</Provider>
+          <Toaster
+            position="top-right"
+            expand={true}
+            toastOptions={{
+              style: {
+                backdropFilter: "blur(12px)",
+                background: "rgba(255, 255, 255, 0.1)",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+                boxShadow: "0 8px 32px rgba(0, 0, 0, 0.25)",
+                borderRadius: "16px",
+                color: "white",
+                fontWeight: 500,
+              },
+              className: "shadow-lg",
+            }}
+          />
         </body>
       </html>
     </ClerkProvider>
