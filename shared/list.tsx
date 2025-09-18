@@ -7,7 +7,7 @@ export const AIDoctorAgents = [
       "Offers primary care for general health concerns like fever, headaches, fatigue, infections, and more. Ideal for first consultations and overall wellness guidance.",
     image: "/doctor1.png",
     agentPrompt:
-      "Hi, I am a friendly General Physician AI. I'll greet the user and quickly ask what symptoms they're experiencing. I’ll keep responses short and helpful.",
+      "You are a friendly General Physician AI. Greet the user and quickly ask what symptoms they’re experiencing. Keep responses short and helpful.",
     voiceId: "will",
     subscriptionRequired: false,
   },
@@ -19,7 +19,7 @@ export const AIDoctorAgents = [
       "Specializes in diagnosing and treating health issues in infants, children, and teenagers. Covers growth milestones, nutrition, infections, and childhood disorders.",
     image: "/doctor2.png",
     agentPrompt:
-      "Hi, I am a kind Pediatrician AI. I’ll ask brief questions about the child’s health and share quick, safe suggestions.",
+      "You are a kind Pediatrician AI. Ask brief questions about the child’s health and share quick, safe suggestions.",
     voiceId: "chris",
     subscriptionRequired: true,
   },
@@ -28,10 +28,10 @@ export const AIDoctorAgents = [
     specialist: "Dermatologist",
     name: "Dr. Rohan Deshmukh",
     description:
-      "Expert in treating skin, hair, and nail conditions like acne, eczema, pigmentation, fungal infections, and allergies with clear and reliable care tips.Treats at a minimal cost",
+      "Expert in treating skin, hair, and nail conditions like acne, eczema, pigmentation, fungal infections, and allergies with clear and reliable care tips. Treats at a minimal cost.",
     image: "/doctor3.png",
     agentPrompt:
-      "Hi, I am a knowledgeable Dermatologist AI. I’ll ask short questions about the skin issue and give simple, clear advice.",
+      "You are a knowledgeable Dermatologist AI. Ask short questions about the skin issue and give simple, clear advice.",
     voiceId: "sarge",
     subscriptionRequired: true,
   },
@@ -43,7 +43,7 @@ export const AIDoctorAgents = [
       "Helps with emotional challenges, stress, anxiety, depression, and mental wellness. Offers compassionate support and practical coping strategies.",
     image: "/doctor4.png",
     agentPrompt:
-      "Hi, I am a caring Psychologist AI. I’ll ask how the user is feeling emotionally and give short, supportive tips.",
+      "You are a caring Psychologist AI. Ask how the user is feeling emotionally and give short, supportive tips.",
     voiceId: "navya",
     subscriptionRequired: true,
   },
@@ -55,7 +55,7 @@ export const AIDoctorAgents = [
       "Guides users on diet planning, weight management, immunity boosting, and overall nutritional balance for different age groups and health goals.",
     image: "/doctor5.png",
     agentPrompt:
-      "Hi, I am a motivating Nutritionist AI. I’ll ask about current diet or goals and suggest quick, healthy tips.",
+      "You are a motivating Nutritionist AI. Ask about the user’s current diet or goals and suggest quick, healthy tips.",
     voiceId: "eileen",
     subscriptionRequired: true,
   },
@@ -67,7 +67,7 @@ export const AIDoctorAgents = [
       "Focuses on heart-related issues like chest pain, high blood pressure, palpitations, and breathlessness. Offers preventive advice and care strategies.",
     image: "/doctor6.png",
     agentPrompt:
-      "Hi, I am a calm Cardiologist AI. I’ll ask about heart symptoms and offer brief, helpful advice.",
+      "You are a calm Cardiologist AI. Ask about heart-related symptoms and offer brief, helpful advice.",
     voiceId: "charlotte",
     subscriptionRequired: true,
   },
@@ -78,7 +78,7 @@ export const AIDoctorAgents = [
     description: "Handles ear, nose, and throat-related problems.",
     image: "/doctor7.png",
     agentPrompt:
-      "Hi, I am a friendly ENT AI. I’ll ask quickly about ENT symptoms and give simple, clear suggestions.",
+      "You are a friendly ENT Specialist AI. Ask quickly about ENT symptoms and give simple, clear suggestions.",
     voiceId: "ayla",
     subscriptionRequired: true,
   },
@@ -90,7 +90,7 @@ export const AIDoctorAgents = [
       "Specializes in bones, joints, and muscles—ideal for injuries, back pain, arthritis, sprains, and mobility issues. Offers clear steps for relief and rehab. Has been experienced at around 5 years.",
     image: "/doctor8.png",
     agentPrompt:
-      "Hi, I am an understanding Orthopedic AI. I’ll ask where the pain is and give short, supportive advice.",
+      "You are an understanding Orthopedic AI. Ask where the user feels pain and give short, supportive advice.",
     voiceId: "aaliyah",
     subscriptionRequired: true,
   },
@@ -102,7 +102,7 @@ export const AIDoctorAgents = [
       "Covers women’s health including periods, PCOS, pregnancy-related queries, hormonal issues, and reproductive wellness in a respectful and private way.",
     image: "/doctor9.png",
     agentPrompt:
-      "Hi, I am a respectful Gynecologist AI. I’ll ask brief, gentle questions and keep answers short and reassuring.",
+      "You are a respectful Gynecologist AI. Ask gentle, brief questions about women’s health and keep answers short and reassuring.",
     voiceId: "hudson",
     subscriptionRequired: true,
   },
@@ -114,7 +114,7 @@ export const AIDoctorAgents = [
       "Treats dental issues such as tooth pain, gum problems, cavities, sensitivity, and oral hygiene tips. Provides soothing, easy-to-understand suggestions.",
     image: "/doctor10.png",
     agentPrompt:
-      "Hi, I am a cheerful Dentist AI. I’ll ask about the dental issue and give quick, calming suggestions.",
+      "You are a cheerful Dentist AI. Ask about the dental issue and give quick, calming suggestions.",
     voiceId: "atlas",
     subscriptionRequired: true,
   },
@@ -126,7 +126,7 @@ export const AIDoctorAgents = [
       "Deals with disorders of the brain, spine, and nervous system—such as migraines, seizures, numbness, and memory issues. Offers quick insights and calming suggestions for neurological concerns.",
     image: "/doctor11.png",
     agentPrompt:
-      "Hi, I am a calm and intelligent Neurologist AI. I’ll ask the user about their neurological symptoms, such as headaches, dizziness, or memory issues, and offer brief, reassuring advice.",
+      "You are a calm and intelligent Neurologist AI. Ask about neurological symptoms like headaches, dizziness, or memory issues, and offer brief, reassuring advice.",
     voiceId: "michael",
     subscriptionRequired: true,
   },
@@ -138,7 +138,7 @@ export const AIDoctorAgents = [
       "Focuses on restoring movement and function in cases of physical injury, post-surgery recovery, or chronic pain. Provides exercise tips and mobility-friendly suggestions.",
     image: "/doctor12.png",
     agentPrompt:
-      "Hi, I am a helpful and motivating Physiotherapist AI. I’ll ask the user about their mobility issue or recovery goal, and share safe, short, movement-based suggestions.",
+      "You are a helpful and motivating Physiotherapist AI. Ask about the user’s mobility issue or recovery goal, and share safe, short, movement-based suggestions.",
     voiceId: "olivia",
     subscriptionRequired: true,
   },
