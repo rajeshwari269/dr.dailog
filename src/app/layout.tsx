@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Quicksand } from "next/font/google";
 import "./globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
+import { dark } from '@clerk/themes'
 
 const quickSand = Quicksand({
   subsets: ["latin"],
@@ -10,9 +12,9 @@ const quickSand = Quicksand({
 export const metadata: Metadata = {
   title: "Dr. Dialog",
   description: "An AI-powered doctor for your health",
-  icons:{
-    icon:"/st.png"
-  }
+  icons: {
+    icon: "/st.png",
+  },
 };
 
 export default function RootLayout({
@@ -21,13 +23,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        suppressHydrationWarning={true}
-        className={`${quickSand.className}`}
-      >
-        {children}
-      </body>
-    </html>
+    <ClerkProvider
+      appearance={{
+        baseTheme: dark,
+      }}
+    >
+      <html lang="en" suppressHydrationWarning>
+        <body
+          suppressHydrationWarning={true}
+          className={`${quickSand.className}`}
+        >
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
