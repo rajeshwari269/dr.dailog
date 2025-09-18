@@ -1,20 +1,20 @@
-import Image from "next/image"
-import { motion } from "framer-motion"
+import Image from "next/image";
+import { motion } from "framer-motion";
 
 export type DoctorAgent = {
-  id: number,
-  specialist: string,
-  name: string,
-  description: string,
-  image: string,
-  agentPrompt: string,
-  voiceId?: string,
-  subscriptionRequired?: boolean,
-}
+  id: number;
+  specialist: string;
+  name: string;
+  description: string;
+  image: string;
+  agentPrompt: string;
+  voiceId?: string;
+  subscriptionRequired?: boolean;
+};
 
 type Props = {
-  doctorAgent: DoctorAgent
-}
+  doctorAgent: DoctorAgent;
+};
 
 const DoctorCard = ({ doctorAgent }: Props) => {
   return (
@@ -58,22 +58,37 @@ const DoctorCard = ({ doctorAgent }: Props) => {
 
         <div className="pt-2">
           <button
-            className={`w-full py-3 px-6 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${doctorAgent.subscriptionRequired
+            className={`w-full py-3 px-6 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${
+              doctorAgent.subscriptionRequired
                 ? "bg-gradient-to-r from-gray-700 to-gray-800 text-gray-400 border border-gray-600 cursor-not-allowed"
                 : "bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-lg hover:shadow-emerald-500/30 cursor-pointer"
-              }`}
+            }`}
             disabled={doctorAgent.subscriptionRequired}
           >
             {doctorAgent.subscriptionRequired ? (
               <>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                    clipRule="evenodd"
+                  />
                 </svg>
                 Upgrade to Consult
               </>
             ) : (
               <>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
                   <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
                   <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
                 </svg>
@@ -86,7 +101,7 @@ const DoctorCard = ({ doctorAgent }: Props) => {
 
       <div className="absolute inset-0 bg-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl pointer-events-none" />
     </motion.div>
-  )
-}
+  );
+};
 
-export default DoctorCard
+export default DoctorCard;
