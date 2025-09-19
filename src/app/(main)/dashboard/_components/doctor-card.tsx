@@ -8,7 +8,7 @@ export type DoctorAgent = {
   description: string;
   image: string;
   agentPrompt: string;
-  voiceId?: string;
+  voiceId: string;
   subscriptionRequired?: boolean;
 };
 
@@ -17,6 +17,11 @@ type Props = {
 };
 
 const DoctorCard = ({ doctorAgent }: Props) => {
+  function setSessionDetail(arg0: { selectedDoctor: DoctorAgent }) {
+    // Store the selected doctor in localStorage or context for session detail
+    localStorage.setItem("selectedDoctor", JSON.stringify(arg0.selectedDoctor));
+  
+  }
   return (
     <motion.div
       className="relative h-96 rounded-2xl overflow-hidden shadow-2xl group"
@@ -58,6 +63,9 @@ const DoctorCard = ({ doctorAgent }: Props) => {
 
         <div className="pt-2">
           <button
+          onClick={() => {
+    setSessionDetail({ selectedDoctor: doctorAgent });
+  }}
             className={`w-full py-3 px-6 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${
               doctorAgent.subscriptionRequired
                 ? "bg-gradient-to-r from-gray-700 to-gray-800 text-gray-400 border border-gray-600 cursor-not-allowed"

@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { DoctorAgent } from "../../_components/doctor-card";
 import {
   AlertCircle,
@@ -40,6 +40,32 @@ const MedicalVoiceAgent = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [vapiInstance, setVapiInstance] = useState<any>();
   const [callDuration, setCallDuration] = useState(0);
+  const [currentRole, setCurrentRole] = useState<string | null>();
+  const [liveTranscript, setLiveTranscript] = useState<string>("");
+  const [messages, setMessages] = useState<Messages[]>([]);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const timerRef = useRef<NodeJS.Timeout>(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, liveTranscript]);
+
+  useEffect(() => {
+    if (callStarted) {
+      timerRef.current = setInterval(() => {
+        setCallDuration((prev) => prev + 1);
+      }, 1000);
+    } else if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [callStarted]);
 
   useEffect(() => {
     sessionId && getSessionDetails();
@@ -77,18 +103,110 @@ const MedicalVoiceAgent = () => {
     const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY!);
     setVapiInstance(vapi);
 
-    vapi.start(process.env.NEXT_PUBLIC_VAPI_VOICE_ASSISTANT_ID);
+    const allowedVoiceIds = [
+      "Savannah",
+      "Hana",
+      "Neha",
+      "Cole",
+      "Harry",
+      "Paige",
+      "Spencer",
+    ];
+    let selectedVoiceIdRaw = sessionDetail?.selectedDoctor?.voiceId;
+    console.log("Doctor voiceId before normalization:", selectedVoiceIdRaw);
+    let selectedVoiceId = selectedVoiceIdRaw
+      ? selectedVoiceIdRaw.trim()
+      : undefined;
+    if (!selectedVoiceId || !allowedVoiceIds.includes(selectedVoiceId)) {
+      selectedVoiceId = "Spencer";
+    }
+    console.log("Final voiceId used:", selectedVoiceId);
+
+    const vapiAgntConfig = {
+      name: "AI Medical Voice Agent",
+      firstMessage:
+        "Hello! I am your Medical assistant from Doctor Dialog. I'm here to support you with any health questions or concerns you may have. How are you feeling today?",
+      transcriber: {
+        provider: "assembly-ai",
+        language: "en",
+      },
+      voice: {
+        provider: "vapi",
+        voiceId: selectedVoiceId,
+      },
+      model: {
+        provider: "openai",
+        model: "gpt-5",
+        messages: [
+          {
+            role: "system",
+            content:
+              sessionDetail?.selectedDoctor?.agentPrompt ||
+              "You are a helpful medical AI assistant. Ask about the user's symptoms and provide supportive guidance. Keep responses concise and professional.",
+          },
+        ],
+        temperature: 0.7,
+        maxTokens: 250,
+      },
+      endCallMessage: "Thank you for your consultation. Please take care!",
+      endCallPhrases: ["goodbye", "thank you", "end call", "bye"],
+      silenceTimeoutSeconds: 30,
+    };
+
+    // @ts-ignore
+    vapi.start(vapiAgntConfig);
+
     vapi.on("call-start", () => {
       console.log("Call started");
       setCallStarted(true);
+      setCallDuration(0);
+      setIsLoading(false);
     });
+
     vapi.on("call-end", () => {
       console.log("Call ended");
       setCallStarted(false);
+      setIsLoading(false);
     });
+
     vapi.on("message", (message) => {
       if (message.type === "transcript") {
+        const { role, transcriptType, transcript } = message;
         console.log(`${message.role}: ${message.transcript}`);
+        if (transcriptType === "partial") {
+          setLiveTranscript(transcript);
+          setCurrentRole(role);
+        } else if (transcriptType === "final") {
+          setMessages((prev: any) => [
+            ...prev,
+            { role: role, text: transcript, timestamp: new Date() },
+          ]);
+          setLiveTranscript("");
+          setCurrentRole(null);
+        }
+      }
+    });
+
+    vapi.on("speech-start", () => {
+      console.log("Assistant Speaking");
+      setCurrentRole("assistant");
+    });
+
+    vapi.on("speech-end", () => {
+      console.log("User Speaking");
+      setCurrentRole("user");
+    });
+
+    vapi.on("error", (err: any) => {
+      console.error("VAPI error:", err);
+      setError(err.message || "Call failed");
+      setIsLoading(false);
+      toast.error(`Call failed: ${err.message || "Unknown error"}`);
+
+      // Handle ejection error specifically
+      if (err.type === "ejected") {
+        setCallStarted(false);
+        setVapiInstance(null);
       }
     });
   };
@@ -109,6 +227,12 @@ const MedicalVoiceAgent = () => {
       setIsLoading(false);
     }
   };
+
+  const generateReport=async()=>{
+    const result=await axios.post("/api/medical-report",{
+      
+    })
+  }
 
   const detail = sessionDetail?.selectedDoctor;
 
@@ -179,11 +303,13 @@ const MedicalVoiceAgent = () => {
             <div className="mt-4">
               <div className="inline-flex flex-col items-center gap-2 px-6 py-3 bg-emerald-900/20 text-emerald-200 rounded-xl border border-emerald-800/50 backdrop-blur-sm shadow-lg">
                 <span className="text-2xl font-bold bg-gradient-to-r from-emerald-300 to-emerald-500 bg-clip-text text-transparent">
-                  Dr.Dialog
+                  Dr. Dialog
                 </span>
                 <div className="w-full h-px bg-emerald-800/50 my-1"></div>
                 <p className="text-center text-lg font-medium text-white">
-                  Click below to begin
+                  {callStarted
+                    ? "Consultation in progress"
+                    : "Click below to begin"}
                 </p>
               </div>
             </div>
@@ -191,35 +317,90 @@ const MedicalVoiceAgent = () => {
 
           <div className="w-full max-w-2xl bg-zinc-900/50 rounded-xl border border-zinc-800/70 overflow-hidden shadow-xl mb-8">
             <div className="h-64 md:h-80 overflow-y-auto p-4 space-y-4">
-              <div className="flex gap-3 justify-start">
-                <div className="max-w-[80%] rounded-2xl p-4 bg-emerald-900/30 border border-emerald-800/50">
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="h-6 w-6 rounded-full bg-emerald-800/50 flex items-center justify-center">
-                      <Mic className="h-3 w-3 text-emerald-400" />
-                    </div>
-                    <span className="text-xs font-medium text-gray-400">
-                      10:15
-                    </span>
-                  </div>
-                  <p className="text-white">Hello, how can I help you today?</p>
+              {messages.length === 0 && !liveTranscript ? (
+                <div className="h-full flex items-center justify-center text-zinc-500">
+                  {callStarted
+                    ? "Conversation will appear here..."
+                    : "Start a consultation to begin"}
                 </div>
-              </div>
-
-              <div className="flex gap-3 justify-end">
-                <div className="max-w-[80%] rounded-2xl p-4 bg-blue-900/30 border border-blue-800/50">
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="h-6 w-6 rounded-full bg-blue-800/50 flex items-center justify-center">
-                      <User className="h-3 w-3 text-blue-400" />
+              ) : (
+                <>
+                  {messages.map((msg, index) => (
+                    <div
+                      key={index}
+                      className={`flex gap-3 ${
+                        msg.role === "assistant"
+                          ? "justify-start"
+                          : "justify-end"
+                      }`}
+                    >
+                      <div
+                        className={`max-w-[80%] rounded-2xl p-4 ${
+                          msg.role === "assistant"
+                            ? "bg-emerald-900/30 border border-emerald-800/50"
+                            : "bg-blue-900/30 border border-blue-800/50"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          {msg.role === "assistant" ? (
+                            <div className="h-6 w-6 rounded-full bg-emerald-800/50 flex items-center justify-center">
+                              <Mic className="h-3 w-3 text-emerald-400" />
+                            </div>
+                          ) : (
+                            <div className="h-6 w-6 rounded-full bg-blue-800/50 flex items-center justify-center">
+                              <User className="h-3 w-3 text-blue-400" />
+                            </div>
+                          )}
+                          <span className="text-xs font-medium text-gray-400">
+                            {msg?.timestamp?.toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </span>
+                        </div>
+                        <p className="text-white">{msg.text}</p>
+                      </div>
                     </div>
-                    <span className="text-xs font-medium text-gray-400">
-                      10:16
-                    </span>
-                  </div>
-                  <p className="text-white">
-                    I’d like to start a consultation.
-                  </p>
-                </div>
-              </div>
+                  ))}
+                  {liveTranscript && (
+                    <div
+                      className={`flex gap-3 ${
+                        currentRole === "assistant"
+                          ? "justify-start"
+                          : "justify-end"
+                      }`}
+                    >
+                      <div
+                        className={`max-w-[80%] rounded-2xl p-4 ${
+                          currentRole === "assistant"
+                            ? "bg-emerald-900/20 border border-emerald-800/30"
+                            : "bg-blue-900/20 border border-blue-800/30"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          {currentRole === "assistant" ? (
+                            <div className="h-6 w-6 rounded-full bg-emerald-800/50 flex items-center justify-center">
+                              <Mic className="h-3 w-3 text-emerald-400" />
+                            </div>
+                          ) : (
+                            <div className="h-6 w-6 rounded-full bg-blue-800/50 flex items-center justify-center">
+                              <User className="h-3 w-3 text-blue-400" />
+                            </div>
+                          )}
+                          <span className="text-xs font-medium text-gray-400">
+                            {new Date().toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </span>
+                        </div>
+                        <p className="text-white">{liveTranscript}</p>
+                      </div>
+                    </div>
+                  )}
+                  <div ref={messagesEndRef} />
+                </>
+              )}
             </div>
           </div>
           <div className="flex justify-center mt-6">
