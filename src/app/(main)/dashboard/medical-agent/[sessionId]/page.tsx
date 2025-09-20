@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { DoctorAgent } from "../../_components/doctor-card";
 import {
@@ -11,6 +11,7 @@ import {
   User,
   PhoneCall,
   PhoneOff,
+  LoaderIcon,
 } from "lucide-react";
 import Image from "next/image";
 import Vapi from "@vapi-ai/web";
@@ -44,6 +45,8 @@ const MedicalVoiceAgent = () => {
   const [liveTranscript, setLiveTranscript] = useState<string>("");
   const [messages, setMessages] = useState<Messages[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const router = useRouter();
 
   const timerRef = useRef<NodeJS.Timeout>(null);
 
@@ -172,7 +175,6 @@ const MedicalVoiceAgent = () => {
     vapi.on("message", (message) => {
       if (message.type === "transcript") {
         const { role, transcriptType, transcript } = message;
-        console.log(`${message.role}: ${message.transcript}`);
         if (transcriptType === "partial") {
           setLiveTranscript(transcript);
           setCurrentRole(role);
@@ -218,6 +220,10 @@ const MedicalVoiceAgent = () => {
         await vapiInstance.stop();
         toast.success("Call ended successfully!");
       }
+
+      const result = await generateReport();
+      toast.success("Your report is generated successfully!")
+      router.replace("/dashboard")
     } catch (err) {
       console.error("Error ending call:", err);
       setError("Failed to end call properly");
@@ -228,11 +234,16 @@ const MedicalVoiceAgent = () => {
     }
   };
 
-  const generateReport=async()=>{
-    const result=await axios.post("/api/medical-report",{
-      
-    })
-  }
+  const generateReport = async () => {
+    const result = await axios.post("/api/medical-report", {
+      messages: messages,
+      sessionId: sessionId,
+      doctorName: sessionDetail?.selectedDoctor?.name,
+    });
+
+    console.log(result.data);
+    return result.data;
+  };
 
   const detail = sessionDetail?.selectedDoctor;
 
@@ -444,10 +455,20 @@ const MedicalVoiceAgent = () => {
             ) : (
               <Button
                 onClick={EndCall}
-                className="px-10 py-7 cursor-pointer text-xl font-bold bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 transition-all shadow-xl hover:shadow-red-500/40"
+                className="px-10 py-7 cursor-pointer text-xl font-bold bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 transition-all shadow-xl hover:shadow-red-500/40 flex items-center justify-center"
+                disabled={isLoading}
               >
-                <PhoneOff className="mr-3 h-6 w-6" />
-                End Consultation
+                {isLoading ? (
+                  <>
+                    <LoaderIcon className="mr-3 h-6 w-6 animate-spin" />
+                    Disconnecting
+                  </>
+                ) : (
+                  <>
+                    <PhoneOff className="mr-3 h-6 w-6" />
+                    End Consultation
+                  </>
+                )}
               </Button>
             )}
           </div>

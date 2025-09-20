@@ -61,7 +61,7 @@ export async function POST(req: Request) {
                     "X-Title": "DrDialog",
                 },
                 body: JSON.stringify({
-                    model: "google/gemma-3-27b-it:free",
+                    model: "nvidia/nemotron-nano-9b-v2:free",
                     messages: [
                         {
                             role: "user",
@@ -93,7 +93,8 @@ export async function POST(req: Request) {
         report.timestamp = new Date().toISOString();
 
         const result = await db.update(sessionChatTable).set({
-            report: report
+            report: report,
+            conversation:messages
         }).where(eq(sessionChatTable.sessionId, sessionId))
 
         return NextResponse.json(report);
@@ -105,3 +106,5 @@ export async function POST(req: Request) {
         );
     }
 }
+
+// DISPLAY HISTORY

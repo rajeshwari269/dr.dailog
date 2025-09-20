@@ -18,7 +18,6 @@ type Props = {
 
 const DoctorCard = ({ doctorAgent }: Props) => {
   function setSessionDetail(arg0: { selectedDoctor: DoctorAgent }) {
-    // Store the selected doctor in localStorage or context for session detail
     localStorage.setItem("selectedDoctor", JSON.stringify(arg0.selectedDoctor));
   
   }
