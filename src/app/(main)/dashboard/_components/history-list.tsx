@@ -1,14 +1,25 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Stethoscope } from "lucide-react";
 import { motion } from "framer-motion";
 import AddNewConsultation from "./add-new-consultation";
+import axios from "axios";
 
 const HistoryList = () => {
   const [historyList, setHistoryList] = useState([]);
+
+  useEffect(() => {
+    getHistoryList();
+  },[]);
+
+  const getHistoryList = async () => {
+    const result = await axios.get("/api/session-chat?sessionId=all");
+    console.log(result.data);
+    setHistoryList(result.data);
+  };
 
   return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center">
