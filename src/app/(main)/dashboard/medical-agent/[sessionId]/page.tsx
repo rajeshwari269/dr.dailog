@@ -18,11 +18,25 @@ import Vapi from "@vapi-ai/web";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-type SessionDetail = {
+export type Report = {
+  sessionId: string;
+  agent: string;
+  user: string;
+  timestamp: string;
+  chiefComplaint: string;
+  summary: string;
+  symptoms: string[];
+  duration: string;
+  severity: string;
+  medicationsMentioned: string[];
+  recommendations: string[];
+};
+
+export type SessionDetail = {
   id: number;
   symptoms: string;
   sessionId: number;
-  report: JSON;
+  report: Report;
   selectedDoctor: DoctorAgent;
   createdOn: string;
 };

@@ -7,13 +7,15 @@ import { Stethoscope } from "lucide-react";
 import { motion } from "framer-motion";
 import AddNewConsultation from "./add-new-consultation";
 import axios from "axios";
+import HistoryTable from "./history-table";
+import { SessionDetail } from "../medical-agent/[sessionId]/page";
 
 const HistoryList = () => {
-  const [historyList, setHistoryList] = useState([]);
+  const [historyList, setHistoryList] = useState<SessionDetail[]>([]);
 
   useEffect(() => {
     getHistoryList();
-  },[]);
+  }, []);
 
   const getHistoryList = async () => {
     const result = await axios.get("/api/session-chat?sessionId=all");
@@ -22,7 +24,7 @@ const HistoryList = () => {
   };
 
   return (
-    <div className="min-h-[60vh] flex flex-col items-center justify-center">
+    <div className="min-h-[10vh] flex flex-col items-center justify-center">
       {historyList?.length === 0 ? (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -53,7 +55,7 @@ const HistoryList = () => {
         </motion.div>
       ) : (
         <div className="w-full">
-          <div className="text-white">Appointment List</div>
+          <HistoryTable historyList={historyList} />
         </div>
       )}
     </div>

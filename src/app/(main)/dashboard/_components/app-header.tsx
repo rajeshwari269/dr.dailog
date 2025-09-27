@@ -16,9 +16,8 @@ const AppHeader = () => {
 
   const navLinks = [
     { name: "Home", href: "/" },
-    { name: "History", href: "/history" },
+    { name: "History", href : "/history" },
     { name: "Pricing", href: "/pricing" },
-    { name: "Profile", href: "/profile" },
   ];
 
   return (
