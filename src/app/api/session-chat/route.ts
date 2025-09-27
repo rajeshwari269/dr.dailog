@@ -9,23 +9,31 @@ export async function POST(req: NextRequest) {
   const { symptoms, selectedDoctor } = await req.json();
   const user = await currentUser();
 
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const sessionId = uuidv4();
     const result = await db
       .insert(sessionChatTable)
       .values({
-        sessionId: sessionId,
-        createdBy: user?.primaryEmailAddress?.emailAddress,
-        symptoms: symptoms,
-        selectedDoctor: selectedDoctor,
-        createdOn: new Date().toString(),
+        sessionId,
+        createdBy: user.primaryEmailAddress?.emailAddress,
+        symptoms,
+        selectedDoctor,
+        createdOn: new Date().toISOString(),
       })
-      //   @ts-ignore
+      // @ts-ignore
       .returning({ sessionChatTable });
 
     return NextResponse.json(result[0]?.sessionChatTable);
-  } catch (error) {
-    return NextResponse.json(error);
+  } catch (error: any) {
+    console.error("Error creating session:", error);
+    return NextResponse.json(
+      { error: error.message || "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -47,52 +55,29 @@ export async function GET(req: NextRequest) {
 
   try {
     if (sessionId === "all") {
-      const result = await db
+
+      const sessions = await db
         .select()
         .from(sessionChatTable)
-        .where(
-          eq(
-            sessionChatTable.createdBy,
-            user?.primaryEmailAddress?.emailAddress ?? ""
-          )
-        )
+        .where(eq(sessionChatTable.createdBy, user.primaryEmailAddress?.emailAddress ?? ""))
         .orderBy(desc(sessionChatTable.id));
 
-      if (!result || result.length === 0) {
-        return NextResponse.json(
-          { error: "Session not found" },
-          { status: 404 }
-        );
-      }
 
-      // Verify the session belongs to the current user
-      if (result[0].createdBy !== user.primaryEmailAddress?.emailAddress) {
-        return NextResponse.json(
-          { error: "Unauthorized access to session" },
-          { status: 403 }
-        );
-      }
-
-      return NextResponse.json(result);
+      return NextResponse.json(sessions || []);
     } else {
+
       const result = await db
         .select()
         .from(sessionChatTable)
         .where(eq(sessionChatTable.sessionId, sessionId));
 
       if (!result || result.length === 0) {
-        return NextResponse.json(
-          { error: "Session not found" },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: "Session not found" }, { status: 404 });
       }
 
-      // Verify the session belongs to the current user
+
       if (result[0].createdBy !== user.primaryEmailAddress?.emailAddress) {
-        return NextResponse.json(
-          { error: "Unauthorized access to session" },
-          { status: 403 }
-        );
+        return NextResponse.json({ error: "Unauthorized access to session" }, { status: 403 });
       }
 
       return NextResponse.json(result[0]);

@@ -32,7 +32,7 @@ const Dashboard = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        <HistoryList />
+        <HistoryList  />
 
         <DoctorList />
       </motion.div>

@@ -14,11 +14,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Stethoscope, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DoctorAgent } from "./doctor-card";
 import SuggestedDoctors from "./suggested-doctors";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
+import { SessionDetail } from "../medical-agent/[sessionId]/page";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const AddNewConsultation = () => {
   const [symptoms, setSymptoms] = useState<string>("");
@@ -30,8 +37,31 @@ const AddNewConsultation = () => {
   const [selectedDoctor, setSelectedDoctor] = useState<DoctorAgent | null>(
     null
   );
+  const [historyList, setHistoryList] = useState<SessionDetail[]>([]);
 
   const router = useRouter();
+
+  const { has } = useAuth();
+
+  const paidUser = has ? has({ plan: "pro" }) : false;
+
+  useEffect(() => {
+    getHistoryList();
+  }, []);
+
+  const getHistoryList = async () => {
+    try {
+      const result = await axios.get("/api/session-chat?sessionId=all");
+      console.log(result.data);
+      setHistoryList(result.data);
+    } catch (err: any) {
+      console.error(
+        "Failed to fetch history:",
+        err.response?.data || err.message
+      );
+      setHistoryList([]);
+    }
+  };
 
   const onClickNext = async () => {
     setLoading(true);
@@ -68,10 +98,24 @@ const AddNewConsultation = () => {
     <div>
       <Dialog>
         <DialogTrigger asChild>
-          <Button className="cursor-pointer group px-8 py-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-semibold shadow-xl hover:shadow-emerald-500/40 transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center gap-2">
-            <Stethoscope className="w-5 h-5" />
-            <span>Consult a Doctor</span>
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="inline-block">
+                {" "}
+
+                <Button
+                  disabled={!paidUser && historyList?.length >= 1}
+                  className="cursor-pointer group px-8 py-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-semibold shadow-xl hover:shadow-emerald-500/40 transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center gap-2"
+                >
+                  <Stethoscope className="w-5 h-5" />
+                  <span>Consult a Doctor</span>
+                </Button>
+              </div>
+            </TooltipTrigger>
+            {!paidUser && historyList?.length >= 1 && (
+              <TooltipContent className="text-lg bg-white text-black">Upgrade for more consultations</TooltipContent>
+            )}
+          </Tooltip>
         </DialogTrigger>
         <DialogContent className="max-w-3xl w-full backdrop-blur-xl bg-zinc-900/70 border border-emerald-700/30 shadow-2xl rounded-2xl p-8">
           <DialogHeader>

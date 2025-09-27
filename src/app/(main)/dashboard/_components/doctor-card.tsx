@@ -1,9 +1,12 @@
-"use client"
+"use client";
 
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useAuth } from "@clerk/nextjs";
-import { Lock, MessageCircle } from "lucide-react";
+import { Loader2, Lock, MessageCircle } from "lucide-react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export type DoctorAgent = {
   id: number;
@@ -22,15 +25,30 @@ type Props = {
 
 const DoctorCard = ({ doctorAgent }: Props) => {
   const { has } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const paidUser = has ? has({ plan: "pro" }) : false;
 
   const requiresSubscription = doctorAgent.subscriptionRequired;
   const isLocked = requiresSubscription && !paidUser;
 
-  function setSessionDetail(arg0: { selectedDoctor: DoctorAgent }) {
-    localStorage.setItem("selectedDoctor", JSON.stringify(arg0.selectedDoctor));
-  }
+  const onStartConsultation = async () => {
+    setLoading(true);
+    try {
+      const result = await axios.post("/api/session-chat", {
+        symptoms: "New Symptom",
+        selectedDoctor: doctorAgent,
+      });
+
+      if (result.data?.sessionId) {
+        router.push(`/dashboard/medical-agent/${result.data.sessionId}`);
+      }
+    } catch (error) {
+      console.error("Failed to start consultation:", error);
+    }
+    setLoading(false);
+  };
 
   return (
     <motion.div
@@ -40,7 +58,6 @@ const DoctorCard = ({ doctorAgent }: Props) => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-
       <div className="absolute inset-0">
         <Image
           src={doctorAgent.image}
@@ -59,7 +76,6 @@ const DoctorCard = ({ doctorAgent }: Props) => {
         </div>
       )}
 
-
       <div className="absolute bottom-0 left-0 right-0 p-6 text-white z-10 space-y-4">
         <span className="inline-block px-3 py-1 text-sm font-bold text-emerald-300 bg-black/30 backdrop-blur-lg  rounded-full border border-emerald-400/30">
           {doctorAgent.specialist}
@@ -75,15 +91,20 @@ const DoctorCard = ({ doctorAgent }: Props) => {
 
         <div className="pt-2">
           <button
-            onClick={() => setSessionDetail({ selectedDoctor: doctorAgent })}
-            disabled={isLocked}
+            onClick={onStartConsultation}
+            disabled={isLocked || loading}
             className={`w-full py-3 px-6 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${
               isLocked
                 ? "bg-gradient-to-r from-gray-700 to-gray-800 text-gray-400 border border-gray-600 cursor-not-allowed"
                 : "bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-lg hover:shadow-emerald-500/30 cursor-pointer"
             }`}
           >
-            {isLocked ? (
+            {loading ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" />
+                Consulting
+              </>
+            ) : isLocked ? (
               <>
                 <Lock className="h-5 w-5" />
                 Upgrade to Consult

@@ -28,7 +28,7 @@ const ViewReport = ({ history }: Props) => {
       </DialogTrigger>
       <DialogContent className="bg-white text-gray-800 rounded-3xl shadow-2xl p-8 max-w-2xl border border-green-200">
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle asChild>
             <h2 className="text-center text-3xl font-bold text-green-600 mb-2 tracking-wide">
               🩺 Medical AI Report
             </h2>

@@ -18,10 +18,15 @@ const HistoryList = () => {
   }, []);
 
   const getHistoryList = async () => {
+  try {
     const result = await axios.get("/api/session-chat?sessionId=all");
     console.log(result.data);
-    setHistoryList(result.data);
-  };
+    setHistoryList(result.data); 
+  } catch (err: any) {
+    console.error("Failed to fetch history:", err.response?.data || err.message);
+    setHistoryList([]); 
+  }
+};
 
   return (
     <div className="min-h-[10vh] flex flex-col items-center justify-center">
