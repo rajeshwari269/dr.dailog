@@ -17,7 +17,7 @@ DrDialog is a modern web application for medical consultations, doctor managemen
 - **Framework:** Next.js (App Router)
 - **Language:** TypeScript
 - **Database:** Drizzle ORM (with SQL migrations)
-- **Voice:** Vapi 
+- **Voice:** Vapi
 - **Styling:** CSS, PostCSS
 - **Linting:** ESLint
 - **UI Components:** Custom components in `/src/components/ui`
@@ -57,6 +57,16 @@ drdialog/
 - Pricing information
 - Modern, reusable UI components
 - Database migrations with Drizzle ORM
+
+## Images of the app
+
+## ![Dr Landing Page](https://github.com/priyansh-narang2308/Dr.Dialog/blob/main/screenshots/MainPage.png)
+
+## ![Dr Dashboard](https://github.com/priyansh-narang2308/Dr.Dialog/blob/main/screenshots/dashboard.png)
+
+## ![Dr Report](https://github.com/priyansh-narang2308/Dr.Dialog/blob/main/screenshots/report.png)
+
+## ![Dr Chat Page](https://github.com/priyansh-narang2308/Dr.Dialog/blob/main/screenshots/chatpage.png)
 
 ## Getting Started
 
