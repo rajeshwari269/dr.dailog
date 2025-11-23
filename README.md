@@ -48,7 +48,7 @@ drdialog/
 ├── eslint.config.mjs       # ESLint configuration
 ```
 
-## Features
+# Features
 
 - Doctor listing and management
 - Medical consultation sessions with chat
